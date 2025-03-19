@@ -113,7 +113,7 @@ async def list_metrics() -> List[str]:
         List of metric names as strings
     """
     data = make_prometheus_request("label/__name__/values")
-    return data["values"]
+    return data
 
 @mcp.tool(description="Get metadata for a specific metric")
 async def get_metric_metadata(metric: str) -> List[Dict[str, Any]]:
