@@ -134,6 +134,8 @@ To use the containerized server with Claude Desktop, update the configuration to
 
 This configuration passes the environment variables from Claude Desktop to the Docker container by using the `-e` flag with just the variable name, and providing the actual values in the `env` object.
 
+> **Note about Docker implementation**: The Docker setup has been updated to match the structure of the chess-mcp project, which has been proven to work correctly with Claude. The new implementation uses a multi-stage build process and runs the entry point script directly without an intermediary shell script. This approach ensures proper handling of stdin/stdout for MCP communication.
+
 ## Development
 
 Contributions are welcome! Please open an issue or submit a pull request if you have any suggestions or improvements.
