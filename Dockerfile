@@ -1,43 +1,52 @@
-FROM python:3.10-slim
+FROM python:3.12-slim-bookworm AS builder
 
-# Set working directory
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
 WORKDIR /app
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+ENV UV_COMPILE_BYTECODE=1
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    python3-dev \
-    bash \
-    && rm -rf /var/lib/apt/lists/*
+COPY pyproject.toml ./
+COPY uv.lock ./
+COPY src ./src/
 
-# Copy the project files
-COPY . /app/
-
-# Install uv
-RUN pip install --upgrade pip && \
-    pip install uv
-
-# Create a virtual environment, install dependencies
-RUN uv venv /app/.venv && \
-    . /app/.venv/bin/activate && \
+RUN uv venv && \
     uv pip install -e .
 
-# Make the entrypoint script executable
-RUN chmod +x /app/docker-entrypoint.sh
+FROM python:3.12-slim-bookworm
 
-# Set the entrypoint
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+WORKDIR /app
 
-# Label the image
-LABEL maintainer="pab1it0" \
-      description="Prometheus MCP Server" \
-      version="1.0.0"
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
-# Expose port if needed (but this is optional as the MCP server typically runs on stdio)
-# EXPOSE 8000
+RUN groupadd -r app && useradd -r -g app app
+
+COPY --from=builder /app/.venv /app/.venv
+COPY --from=builder /app/src /app/src
+COPY pyproject.toml /app/
+
+ENV PATH="/app/.venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH="/app" \
+    PYTHONFAULTHANDLER=1
+
+USER app
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8000/health || exit 1
+
+CMD ["/app/.venv/bin/prometheus-mcp-server"]
+
+# GitHub Container Registry Metadata
+LABEL org.opencontainers.image.title="Prometheus MCP Server" \
+      org.opencontainers.image.description="Model Context Protocol server for Prometheus integration" \
+      org.opencontainers.image.version="1.0.0" \
+      org.opencontainers.image.authors="Pavel Shklovsky" \
+      org.opencontainers.image.source="https://github.com/pab1it0/prometheus-mcp-server" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.url="https://github.com/pab1it0/prometheus-mcp-server" \
+      org.opencontainers.image.documentation="https://github.com/pab1it0/prometheus-mcp-server#readme" \
+      org.opencontainers.image.vendor="Pavel Shklovsky"
