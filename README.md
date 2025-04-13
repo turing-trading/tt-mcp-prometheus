@@ -1,5 +1,7 @@
 # Prometheus MCP Server
 
+![](https://badge.mcpx.dev 'MCP')
+
 A [Model Context Protocol][mcp] (MCP) server for Prometheus.
 
 This provides access to your Prometheus metrics and queries through standardized MCP interfaces, allowing AI assistants to execute PromQL queries and analyze your metrics data.
