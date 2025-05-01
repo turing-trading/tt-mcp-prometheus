@@ -21,12 +21,15 @@ class PrometheusConfig:
     username: Optional[str] = None
     password: Optional[str] = None
     token: Optional[str] = None
+    # Optional Org ID for multi-tenant setups
+    org_id: Optional[str] = None
 
 config = PrometheusConfig(
     url=os.environ.get("PROMETHEUS_URL", ""),
     username=os.environ.get("PROMETHEUS_USERNAME", ""),
     password=os.environ.get("PROMETHEUS_PASSWORD", ""),
     token=os.environ.get("PROMETHEUS_TOKEN", ""),
+    org_id=os.environ.get("ORG_ID", ""),
 )
 
 def get_prometheus_auth():
@@ -38,17 +41,24 @@ def get_prometheus_auth():
     return None
 
 def make_prometheus_request(endpoint, params=None):
-    """Make a request to the Prometheus API with proper authentication."""
+    """Make a request to the Prometheus API with proper authentication and headers."""
     if not config.url:
         raise ValueError("Prometheus configuration is missing. Please set PROMETHEUS_URL environment variable.")
 
     url = f"{config.url.rstrip('/')}/api/v1/{endpoint}"
     auth = get_prometheus_auth()
+    headers = {}
+
+    if isinstance(auth, dict):  # Token auth is passed via headers
+        headers.update(auth)
+        auth = None  # Clear auth for requests.get if it's already in headers
     
-    if isinstance(auth, dict):  # Token auth
-        response = requests.get(url, params=params, headers=auth)
-    else:  # Basic auth or no auth
-        response = requests.get(url, params=params, auth=auth)
+    # Add OrgID header if specified
+    if config.org_id:
+        headers["X-Scope-OrgID"] = config.org_id
+
+    # Make the request with appropriate headers and auth
+    response = requests.get(url, params=params, auth=auth, headers=headers)
     
     response.raise_for_status()
     result = response.json()
