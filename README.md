@@ -4,6 +4,10 @@ A [Model Context Protocol][mcp] (MCP) server for Prometheus.
 
 This provides access to your Prometheus metrics and queries through standardized MCP interfaces, allowing AI assistants to execute PromQL queries and analyze your metrics data.
 
+<a href="https://glama.ai/mcp/servers/@pab1it0/prometheus-mcp-server">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@pab1it0/prometheus-mcp-server/badge" alt="Prometheus Server MCP server" />
+</a>
+
 [mcp]: https://modelcontextprotocol.io
 
 ## Features
