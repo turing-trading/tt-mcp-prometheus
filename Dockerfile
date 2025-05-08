@@ -11,7 +11,7 @@ COPY uv.lock ./
 COPY src ./src/
 
 RUN uv venv && \
-    uv pip install -e .
+  uv pip install -e .
 
 FROM python:3.12-slim-bookworm
 
@@ -26,10 +26,10 @@ COPY --from=builder /app/src /app/src
 COPY pyproject.toml /app/
 
 ENV PATH="/app/.venv/bin:$PATH" \
-    PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONPATH="/app" \
-    PYTHONFAULTHANDLER=1
+  PYTHONUNBUFFERED=1 \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONPATH="/app" \
+  PYTHONFAULTHANDLER=1
 
 USER app
 
@@ -42,11 +42,11 @@ CMD ["/app/.venv/bin/prometheus-mcp-server"]
 
 # GitHub Container Registry Metadata
 LABEL org.opencontainers.image.title="Prometheus MCP Server" \
-      org.opencontainers.image.description="Model Context Protocol server for Prometheus integration" \
-      org.opencontainers.image.version="1.0.0" \
-      org.opencontainers.image.authors="Pavel Shklovsky" \
-      org.opencontainers.image.source="https://github.com/pab1it0/prometheus-mcp-server" \
-      org.opencontainers.image.licenses="MIT" \
-      org.opencontainers.image.url="https://github.com/pab1it0/prometheus-mcp-server" \
-      org.opencontainers.image.documentation="https://github.com/pab1it0/prometheus-mcp-server#readme" \
-      org.opencontainers.image.vendor="Pavel Shklovsky"
+  org.opencontainers.image.description="Model Context Protocol server for Prometheus integration" \
+  org.opencontainers.image.version="1.0.3" \
+  org.opencontainers.image.authors="Pavel Shklovsky" \
+  org.opencontainers.image.source="https://github.com/pab1it0/prometheus-mcp-server" \
+  org.opencontainers.image.licenses="MIT" \
+  org.opencontainers.image.url="https://github.com/pab1it0/prometheus-mcp-server" \
+  org.opencontainers.image.documentation="https://github.com/pab1it0/prometheus-mcp-server#readme" \
+  org.opencontainers.image.vendor="Pavel Shklovsky"
