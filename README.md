@@ -81,9 +81,23 @@ ORG_ID=your_organization_id
 
 This project includes Docker support for easy deployment and isolation.
 
-### Building the Docker Image
+### Pre-built Docker Image
 
-Build the Docker image using:
+The easiest way to use this project is with the pre-built image from GitHub Container Registry:
+
+```bash
+docker pull ghcr.io/pab1it0/prometheus-mcp-server:latest
+```
+
+You can also use specific versions with tags:
+
+```bash
+docker pull ghcr.io/pab1it0/prometheus-mcp-server:1.0.0
+```
+
+### Building the Docker Image Locally
+
+If you prefer to build the image yourself:
 
 ```bash
 docker build -t prometheus-mcp-server .
@@ -93,7 +107,17 @@ docker build -t prometheus-mcp-server .
 
 You can run the server using Docker in several ways:
 
-#### Using docker run directly:
+#### Using docker run with the pre-built image:
+
+```bash
+docker run -it --rm \
+  -e PROMETHEUS_URL=http://your-prometheus-server:9090 \
+  -e PROMETHEUS_USERNAME=your_username \
+  -e PROMETHEUS_PASSWORD=your_password \
+  ghcr.io/pab1it0/prometheus-mcp-server:latest
+```
+
+#### Using docker run with a locally built image:
 
 ```bash
 docker run -it --rm \
@@ -127,7 +151,7 @@ To use the containerized server with Claude Desktop, update the configuration to
         "-e", "PROMETHEUS_URL",
         "-e", "PROMETHEUS_USERNAME",
         "-e", "PROMETHEUS_PASSWORD",
-        "prometheus-mcp-server"
+        "ghcr.io/pab1it0/prometheus-mcp-server:latest"
       ],
       "env": {
         "PROMETHEUS_URL": "http://your-prometheus-server:9090",
