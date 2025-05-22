@@ -31,6 +31,9 @@ ENV PATH="/app/.venv/bin:$PATH" \
   PYTHONPATH="/app" \
   PYTHONFAULTHANDLER=1
 
+# Curl for HEALTHCHECK
+RUN apt-get update && apt-get install -y curl
+
 USER app
 
 EXPOSE 8000
