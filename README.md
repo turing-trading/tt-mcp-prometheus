@@ -58,114 +58,23 @@ ORG_ID=your_organization_id
 {
   "mcpServers": {
     "prometheus": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "<full path to prometheus-mcp-server directory>",
-        "run",
-        "src/prometheus_mcp_server/main.py"
-      ],
-      "env": {
-        "PROMETHEUS_URL": "http://your-prometheus-server:9090",
-        "PROMETHEUS_USERNAME": "your_username",
-        "PROMETHEUS_PASSWORD": "your_password"
-      }
-    }
-  }
-}
-```
-
-> Note: if you see `Error: spawn uv ENOENT` in Claude Desktop, you may need to specify the full path to `uv` or set the environment variable `NO_UV=1` in the configuration.
-
-## Docker Usage
-
-This project includes Docker support for easy deployment and isolation.
-
-### Pre-built Docker Image
-
-The easiest way to use this project is with the pre-built image from GitHub Container Registry:
-
-```bash
-docker pull ghcr.io/pab1it0/prometheus-mcp-server:latest
-```
-
-You can also use specific versions with tags:
-
-```bash
-docker pull ghcr.io/pab1it0/prometheus-mcp-server:1.0.0
-```
-
-### Building the Docker Image Locally
-
-If you prefer to build the image yourself:
-
-```bash
-docker build -t prometheus-mcp-server .
-```
-
-### Running with Docker
-
-You can run the server using Docker in several ways:
-
-#### Using docker run with the pre-built image:
-
-```bash
-docker run -it --rm \
-  -e PROMETHEUS_URL=http://your-prometheus-server:9090 \
-  -e PROMETHEUS_USERNAME=your_username \
-  -e PROMETHEUS_PASSWORD=your_password \
-  ghcr.io/pab1it0/prometheus-mcp-server:latest
-```
-
-#### Using docker run with a locally built image:
-
-```bash
-docker run -it --rm \
-  -e PROMETHEUS_URL=http://your-prometheus-server:9090 \
-  -e PROMETHEUS_USERNAME=your_username \
-  -e PROMETHEUS_PASSWORD=your_password \
-  prometheus-mcp-server
-```
-
-#### Using docker-compose:
-
-Create a `.env` file with your Prometheus credentials and then run:
-
-```bash
-docker-compose up
-```
-
-### Running with Docker in Claude Desktop
-
-To use the containerized server with Claude Desktop, update the configuration to use Docker with the environment variables:
-
-```json
-{
-  "mcpServers": {
-    "prometheus": {
       "command": "docker",
       "args": [
         "run",
-        "--rm",
         "-i",
-        "-e", "PROMETHEUS_URL",
-        "-e", "PROMETHEUS_USERNAME",
-        "-e", "PROMETHEUS_PASSWORD",
+        "--rm",
+        "-e",
+        "PROMETHEUS_URL",
         "ghcr.io/pab1it0/prometheus-mcp-server:latest"
       ],
       "env": {
-        "PROMETHEUS_URL": "http://your-prometheus-server:9090",
-        "PROMETHEUS_USERNAME": "your_username",
-        "PROMETHEUS_PASSWORD": "your_password"
+        "PROMETHEUS_URL": "<url>"
       }
     }
   }
 }
 ```
 
-This configuration passes the environment variables from Claude Desktop to the Docker container by using the `-e` flag with just the variable name, and providing the actual values in the `env` object.
-
-> **Note about Docker implementation**: The Docker setup has been updated to match the structure of the chess-mcp project, which has been proven to work correctly with Claude. The new implementation uses a multi-stage build process and runs the entry point script directly without an intermediary shell script. This approach ensures proper handling of stdin/stdout for MCP communication.
 
 ## Development
 
