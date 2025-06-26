@@ -2,6 +2,8 @@
 
 import os
 import json
+import signal
+import sys
 from typing import Any, Dict, List, Optional, Union
 from dataclasses import dataclass
 import time
@@ -203,6 +205,20 @@ async def get_targets() -> Dict[str, List[Dict[str, Any]]]:
     
     return result
 
+def signal_handler(signum, frame):
+    """Handle SIGTERM and SIGINT signals for graceful shutdown."""
+    signal_name = signal.Signals(signum).name
+    logger.info("Received shutdown signal", signal=signal_name, mode="direct")
+    sys.exit(0)
+
 if __name__ == "__main__":
+    # Setup signal handlers for direct mode
+    signal.signal(signal.SIGTERM, signal_handler)
+    signal.signal(signal.SIGINT, signal_handler)
+    
     logger.info("Starting Prometheus MCP Server", mode="direct")
-    mcp.run()
+    try:
+        mcp.run()
+    except KeyboardInterrupt:
+        logger.info("Keyboard interrupt received, stopping server", mode="direct")
+        sys.exit(0)
