@@ -76,7 +76,12 @@ def make_prometheus_request(endpoint, params=None):
             logger.error("Prometheus API returned error", endpoint=endpoint, error=error_msg, status=result["status"])
             raise ValueError(f"Prometheus API error: {error_msg}")
         
-        logger.debug("Prometheus API request successful", endpoint=endpoint, result_type=result.get("data", {}).get("resultType"))
+        data_field = result.get("data", {})
+        if isinstance(data_field, dict):
+            result_type = data_field.get("resultType")
+        else:
+            result_type = "list"
+        logger.debug("Prometheus API request successful", endpoint=endpoint, result_type=result_type)
         return result["data"]
     
     except requests.exceptions.RequestException as e:
